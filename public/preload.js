@@ -15,6 +15,12 @@ var travel  = function (dir,depth,callback){
         if(stats.isDirectory()&& !pathname.endsWith(".app")){
             travel(pathname,depth+1,callback)
         }else{
+            const images  = ['png', 'jpg', 'jpeg', 'bmp', 'ico', 'gif', 'svg'];
+            for (let i = 0; i < images.length; i++) {
+                if(file.endsWith(images[i])){
+                    return//图片就不处理
+                }
+            }
             if(os.type() === "Darwin"){
                 //判断mac替身
                 if(!stats.isDirectory()&&utils.isMacLink(pathname)){pathname = utils.getMacLink(pathname);}
