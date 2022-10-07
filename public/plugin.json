@@ -1,0 +1,31 @@
+{
+  "name": "quickstart",
+  "pluginName": "quickstart",
+  "preload": "preload.js",
+  "description": "极速启动",
+  "version": "v1.0.0",
+  "main": "index.html",
+  "author": "Ankio",
+  "homepage": "https://github.com/dreamncn/quickstart",
+  "logo": "logo.png",
+  "features": [
+    {
+      "code": "quickstart",
+      "explain": "极速启动",
+      "cmds": ["极速启动","quick","q"],
+      "icon": "logo.png"
+    },
+    {
+      "code": "quicksearch",
+      "explain": "极速搜索",
+      "cmds": ["极速搜索","qs"],
+      "icon": "logo.png"
+    },
+    {
+      "code": "quicksetting",
+      "explain": "极速设置",
+      "cmds": ["极速设置","qss"],
+      "icon": "logo.png"
+    }
+  ]
+}
