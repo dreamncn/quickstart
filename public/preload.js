@@ -49,8 +49,6 @@ window.transferDirs = function (dir){
                 break;
             }
         }
-
-        utools.db.remove(link);
         utools.db.put({
             _id: link,
             data: logo

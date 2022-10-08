@@ -10,6 +10,16 @@
 import { ref } from 'vue'
 const emit = defineEmits(["setIndex"]);
 const fullscreenLoading = ref(false)
+//删除存储的数据
+const quickList = utools.db.get("quick_list")
+if(quickList!==null){
+  const json = JSON.parse(quickList.data);
+  for (const jsonKey in json) {
+    for (const jsonKeyElement of json[jsonKey]) {
+      utools.db.remove(jsonKeyElement.link)
+    }
+  }
+}
 utools.db.remove("quick_list")
 utools.db.remove("quick_sort")
 function add(){
