@@ -46,7 +46,7 @@ let d = utools.db.get("setting")
 
 if(d!==null)
   formInline.value = JSON.parse(d.data);
-console.log(formInline.value)
+
 
 </script>
 
