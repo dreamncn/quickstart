@@ -1,6 +1,6 @@
 <script setup>
 
-import {onMounted, watch} from "vue";
+import {onActivated, onMounted, watch} from "vue";
 
 const emit = defineEmits(["setIndex"]);
 
@@ -9,40 +9,46 @@ const props = defineProps({
 })
 
 let tableData = [];
+let data = [];
+try{
+  data = JSON.parse(utools.db.get("quick_list").data);
+}catch (e) {
+  console.log("错误",e)
+}
 
-onMounted(()=>{
-  let data = [];
-  try{
-    data = JSON.parse(utools.db.get("quick_list").data);
-  }catch (e) {
-    console.log("错误",e)
+function search(newVal) {
+  console.log(newVal)
+  if(newVal===""){
+    emit("setIndex",0)
+  }else{
+    tableData = [];
+    for (const dataKey in data) {
+      for (let i = 0; i < data[dataKey].length; i++) {
+        //console.log(data[dataKey][i])
+        if(data[dataKey][i]["name"].toLowerCase().indexOf(newVal.toString().toLowerCase())!==-1){
+          tableData.push({
+            name:data[dataKey][i]["name"],
+            sort:dataKey,
+            link:data[dataKey][i]["link"],
+            icon:utools.db.get(data[dataKey][i]["link"]).data
+          });
+        }
+      }
+    }
   }
+}
+search(props.text);
+onMounted(()=>{
   if(data.length===0) {
     emit("setIndex",1)
     return
   }
+
   watch(
       () => props.text,
       (newVal, oldVal) => {
-        if(newVal===""){
-          emit("setIndex",0)
-        }else{
-          tableData = [];
-          for (const dataKey in data) {
-            //   console.log(dataKey)
-            for (let i = 0; i < data[dataKey].length; i++) {
-              //console.log(data[dataKey][i])
-              if(data[dataKey][i]["name"].toLowerCase().indexOf(newVal.toString().toLowerCase())!==-1){
-                tableData.push({
-                  name:data[dataKey][i]["name"],
-                  sort:dataKey,
-                  link:data[dataKey][i]["link"],
-                  icon:utools.db.get(data[dataKey][i]["link"]).data
-                });
-              }
-            }
-          }
-        }
+       if(newVal===oldVal&&newVal!=="")return;
+       search(newVal);
       }
   )
 

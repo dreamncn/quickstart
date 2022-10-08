@@ -37,16 +37,16 @@ function update() {
 function save() {
   utools.db.remove("setting")
   utools.db.put({_id:"setting",data:JSON.stringify(formInline.value)})
-  console.log(formInline.value)
+
   emit("setIndex",0)
 }
 
 let formInline = ref({style:"",location:"top"})
 let d = utools.db.get("setting")
-console.log(d)
+
 if(d!==null)
   formInline.value = JSON.parse(d.data);
-console.log(formInline.value)
+
 
 </script>
 
