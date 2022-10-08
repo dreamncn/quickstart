@@ -11,13 +11,12 @@ var travel  = function (dir,depth,callback){
         const category = dir.substring(dir.lastIndexOf("/") + 1);
         const name = utils.replaceSuffix(file);
         const stats = fs.lstatSync(pathname);
-        console.log(pathname)
         if(stats.isDirectory()&& !pathname.endsWith(".app")){
             travel(pathname,depth+1,callback)
         }else{
             const images  = ['png', 'jpg', 'jpeg', 'bmp', 'ico', 'gif', 'svg'];
             for (let i = 0; i < images.length; i++) {
-                if(file.endsWith(images[i])){
+                if(file.endsWith("."+images[i])){
                     return//图片就不处理
                 }
             }
@@ -41,7 +40,7 @@ window.transferDirs = function (dir){
     var list = {};
     travel(dir,0,function (category,name,link) {
         let data = ['png', 'jpg', 'jpeg', 'bmp', 'ico', 'gif', 'svg'];
-        let logo = null;
+        let logo = utils.getBase64Ico(link);
         //如果同路径下存在同名图片则认为是路径
         for (let i = 0; i < data.length; i++) {
             const p = utils.replaceSuffix(link)+"."+data[i];
@@ -50,18 +49,17 @@ window.transferDirs = function (dir){
                 break;
             }
         }
-        if(logo===null){
-            logo = utils.getBase64Ico(link);
-        }
+
+        utools.db.remove(link);
         utools.db.put({
             _id: link,
             data: logo
         });
         //为了json的轻量，将图片丢到数据库
-        var json = {
-            "name":name,
-            "link":link,
-        }
+        const json = {
+            "name": name,
+            "link": link,
+        };
         if(!list[category]){
             list[category] = [];
         }
@@ -115,7 +113,7 @@ var utils = {
                         }
                         //
                     }else {
-                        //此处有问题，因为是按照字节转换的，所以遇到中文（双字节）会出现乱码，以后再说吧。
+                        // TODO 此处有问题，因为是按照字节转换的，所以遇到中文（双字节）会出现乱码，以后再说吧。
                         if(first){
                             first = false;
 
@@ -187,10 +185,8 @@ var utils = {
         if (['png', 'jpg', 'jpeg', 'bmp', 'ico', 'gif', 'svg'].includes(ext)) {
             if (ext === 'svg') ext = 'svg+xml'
             sourceImage = `data:image/${ext};base64,` + fs.readFileSync(filepath, 'base64')
-            if (ext === 'png') return sourceImage
         } else {
             sourceImage = utools.getFileIcon(filepath)
-            return sourceImage
         }
         return sourceImage
     },//打开文件方法
