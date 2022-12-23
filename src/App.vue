@@ -32,7 +32,7 @@ utools.setSubInput(({ text }) => {
     return;
   }
 
-  if(text === "!"){
+  if(text === "!"||text === "！"){
     let d = utools.db.get("setting")
     if(d!==null){
       ElMessage('正在刷新数据')
