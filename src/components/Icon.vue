@@ -1,5 +1,5 @@
 <template>
-<div class="icon-main" @click="click">
+<div :class="icon_cls" @click="click">
   <img :src="icon"  alt="" />
   <span>{{name}}</span>
 </div>
@@ -9,11 +9,12 @@
 
 const props = defineProps({
   link:String,
-  name:String
+  name:String,
+  icon_item:String
 });
 
 let icon = utools.db.get(props.link).data;
-
+let icon_cls = "icon-main "+props.icon_item;
 function click() {
   utools.shellOpenPath(props.link)
 }
@@ -30,6 +31,16 @@ function click() {
   cursor: pointer;
   position: relative;
 }
+.icon-main.list{
+  height: 50px;
+  padding: 16px;
+  display: block;
+  cursor: pointer;
+  position: relative;
+  width: calc(100% - 50px);
+  text-align: left;
+}
+
 .icon-main>img{
   width: 50px;
   height: 50px;
@@ -53,8 +64,40 @@ function click() {
   width: 50px;
   display: block;
 }
+.icon-main.list > span{
+  display: inline-block;
+  font-size: 22px;
+  vertical-align:middle;
+  width: calc(100% - 100px);
+  text-align: left;
+}
+.icon-main.list > img{
+  margin-right: 20px;
+}
+.icon-main.list{
+  border-radius: 8px;
+}
+.icon-main.list:nth-child(odd){
+  background: #fcfcfc;
+
+}
+.icon-main.list:nth-child(even){
+
+}
 .icon-main:hover {
   border-radius: 8px;
-  background-color: #f5f5f5
+  background-color: #f5f5f5!important;
 }
+@media (prefers-color-scheme: dark) {
+  .icon-main.list > span{
+    color: #d7d7d7!important;
+  }
+  .icon-main.list:nth-child(odd){
+    background: #222;
+  }
+  .icon-main:hover {
+    background-color: #444!important;
+  }
+}
+
 </style>

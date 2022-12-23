@@ -3,40 +3,42 @@ const path=require('path');
 const os = require("os");
 const {shell} = require("electron");
 const {exec} = require("child_process");
-var travel  = function (dir,depth,callback){
-    if(depth>1)return;//大于二级目录不处理
-    fs.readdirSync(dir).forEach((file)=>{
-        if(file.startsWith("."))return;
+const travel = function (dir, depth, callback) {
+    if (depth > 1) return;//大于二级目录不处理
+    fs.readdirSync(dir).forEach((file) => {
+        if (file.startsWith(".")) return;
         let pathname = path.join(dir, file);
-        const category = dir.substring(dir.lastIndexOf("/") + 1);
+        const split = utools.isWindows()?'\\':"/";
+        const category = dir.substring(dir.lastIndexOf(split) + 1);
         const name = utils.replaceSuffix(file);
         const stats = fs.lstatSync(pathname);
-        if(stats.isDirectory()&& !pathname.endsWith(".app")){
-            travel(pathname,depth+1,callback)
-        }else{
-            const images  = ['png', 'jpg', 'jpeg', 'bmp', 'ico', 'gif', 'svg'];
+        if (stats.isDirectory() && !pathname.endsWith(".app")) {
+            travel(pathname, depth + 1, callback)
+        } else {
+            const images = ['png', 'jpg', 'jpeg', 'bmp', 'ico', 'gif', 'svg'];
             for (let i = 0; i < images.length; i++) {
-                if(file.endsWith("."+images[i])){
+                if (file.endsWith("." + images[i])) {
                     return//图片就不处理
                 }
             }
-            if(os.type() === "Darwin"){
+            if (os.type() === "Darwin") {
                 //判断mac替身
-                if(!stats.isDirectory()&&utils.isMacLink(pathname)){pathname = utils.getMacLink(pathname);}
-            }else if(os.type() === "Windows_NT"){
-                if(utils.isWindowsLink(pathname))pathname = utils.getWindowsLink(pathname);
-            }else{
-                if(utils.isLinuxLink(pathname))pathname = utils.getLinuxLink(pathname);
+                if (!stats.isDirectory() && utils.isMacLink(pathname)) {
+                    pathname = utils.getMacLink(pathname);
+                }
+            } else if (os.type() === "Windows_NT") {
+                if (utils.isWindowsLink(pathname)) pathname = utils.getWindowsLink(pathname);
+            } else {
+                if (utils.isLinuxLink(pathname)) pathname = utils.getLinuxLink(pathname);
             }
-            if(stats.isSymbolicLink()){
+            if (stats.isSymbolicLink()) {
                 pathname = fs.readlinkSync(pathname);
             }
-            callback(category,name,pathname)
+            callback(category, name, pathname)
         }
     })
-}
-
-window.transferDirs = function (dir){
+};
+const transferDirs = function (dir){
     var list = {};
     travel(dir,0,function (category,name,link) {
         let data = ['png', 'jpg', 'jpeg', 'bmp', 'ico', 'gif', 'svg'];
@@ -62,14 +64,58 @@ window.transferDirs = function (dir){
             list[category] = [];
         }
         list[category].push(json);
-        //console.log(list)
     });
     return list;
 }
+window.selectDir=function () {
+    const result = utools.showOpenDialog({
+        filters: [],
+        properties: ['openDirectory']
+    })
+    if(result===undefined)return null;
+    return result[0];
+}
+window.addApps=function (path){
+    //删除存储的数据
+    const quickList = utools.db.get("quick_list");
+    if(quickList!==null){
+        const json = JSON.parse(quickList.data);
+        for (const jsonKey in json) {
+            for (const jsonKeyElement of json[jsonKey]) {
+                utools.db.remove(jsonKeyElement.link);
+                utools.removeFeature("quick_link:"+jsonKeyElement.link);
+            }
+        }
+    }
+    utools.db.remove("quick_list")
+    const quick_list = transferDirs(path)
+    utools.db.put({
+        //存储的时候自动排序
+        _id:"quick_list",data:JSON.stringify(quick_list)
+    });
+    let global_setting = {style:"",location:"left",dir:"",icon:"icon",utools:true};
+    const setting = utools.db.get("setting");
+    if(setting!==null)
+        global_setting = JSON.parse(setting.data);
+    if(global_setting.utools){
+        for (const sortName in quick_list) {
+            for (const listItem of quick_list[sortName]) {
+                utools.setFeature({
+                    code: "quick_link:"+listItem.link,
+                    explain: sortName,
+                    platform:['darwin' , 'win32' , 'linux'],
+                    icon: utools.db.get(listItem.link).data,
+                    cmds: [listItem.name]
+                });
+            }}
+    }
 
-
-
-
+}
+window.openLink=function (link) {
+    window.utools.hideMainWindow()
+    utools.shellOpenPath(link)
+    window.utools.outPlugin()
+}
 var utils = {
     isMacLink(path) {
         let read;
@@ -193,5 +239,3 @@ var utils = {
 
 
 }
-
-

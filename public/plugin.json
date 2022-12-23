@@ -12,7 +12,7 @@
     {
       "code": "quickstart",
       "explain": "极速启动",
-      "cmds": ["极速启动","quick","q"],
+      "cmds": ["极速启动","quick","q","js"],
       "icon": "logo.png"
     },
     {

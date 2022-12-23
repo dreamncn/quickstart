@@ -1,9 +1,8 @@
 <script setup>
 
-import {onActivated, onMounted, watch} from "vue";
+import {onMounted, watch} from "vue";
 
 const emit = defineEmits(["setIndex"]);
-
 const props = defineProps({
   text:String
 })
@@ -13,24 +12,23 @@ let data = [];
 try{
   data = JSON.parse(utools.db.get("quick_list").data);
 }catch (e) {
-  console.log("错误",e)
+
 }
 
 function search(newVal) {
-  console.log(newVal)
   if(newVal===""){
     emit("setIndex",0)
   }else{
     tableData = [];
     for (const dataKey in data) {
-      for (let i = 0; i < data[dataKey].length; i++) {
+      for (const item of data[dataKey]) {
         //console.log(data[dataKey][i])
-        if(data[dataKey][i]["name"].toLowerCase().indexOf(newVal.toString().toLowerCase())!==-1){
+        if(item.name.toLowerCase().indexOf(newVal.toString().toLowerCase())!==-1){
           tableData.push({
-            name:data[dataKey][i]["name"],
+            name:item.name,
             sort:dataKey,
-            link:data[dataKey][i]["link"],
-            icon:utools.db.get(data[dataKey][i]["link"]).data
+            link:item.link,
+            icon:utools.db.get(item.link).data
           });
         }
       }
@@ -79,8 +77,19 @@ function cellClick(row, column, cell, event) {
 
 
 
-<style scoped>
-.demo-tabs{
-  width: 100%;
+<style>
+@media (prefers-color-scheme: dark) {
+  .el-table tr{
+    color: #d7d7d7!important;
+  }
+  .el-table tr:nth-child(odd){
+    background: #222;
+  }
+  .el-table__row--striped td{
+    background: #333!important;
+  }
+  .el-table--enable-row-hover .el-table__body tr:hover>td.el-table__cell  {
+    background-color: #444!important;
+  }
 }
 </style>
