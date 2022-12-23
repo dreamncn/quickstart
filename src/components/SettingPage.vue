@@ -1,7 +1,7 @@
 <template>
   <div style="text-align: left;padding: 20px;">
-    <el-button type="primary" @click="update" size="large" >更新面板数据</el-button>
-    <el-form :model="formInline" style="padding-top: 20px;">
+
+    <el-form :model="formInline" style="padding-top: 20px;" size="large">
       <el-form-item label="显示风格" >
         <el-radio-group v-model="formInline.style" >
           <el-radio label="card" border>卡片</el-radio>
@@ -10,15 +10,32 @@
         </el-radio-group>
       </el-form-item>
 
-      <el-form-item label="显示位置">
+      <el-form-item label="导航位置">
         <el-radio-group v-model="formInline.location">
-          <el-radio label="top" border>上</el-radio>
-          <el-radio label="bottom" border>下</el-radio>
           <el-radio label="left" border>左</el-radio>
           <el-radio label="right" border>右</el-radio>
         </el-radio-group>
       </el-form-item>
 
+      <el-form-item label="图标显示">
+        <el-radio-group v-model="formInline.icon">
+          <el-radio label="list" border>列表显示</el-radio>
+          <el-radio label="icon" border>仅显示图标</el-radio>
+        </el-radio-group>
+      </el-form-item>
+
+      <el-form-item label="在UTools中搜索">
+        <el-switch v-model="formInline.utools" />
+      </el-form-item>
+
+      <el-form-item label="数据文件夹" >
+        <el-col :span="20">
+          <el-input v-model="formInline.dir" disabled placeholder="请选择文件夹" />
+        </el-col>
+        <el-col :span="4">
+        <el-button type="primary" @click="update" style="margin-left: 10px">重新选择</el-button>
+        </el-col>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="save">保存</el-button>
       </el-form-item>
@@ -28,22 +45,24 @@
 </template>
 
 <script setup>
-import {onMounted, ref} from 'vue'
+import {ref} from 'vue'
 const emit = defineEmits(["setIndex"]);
 
 function update() {
-  emit("setIndex",1)
+  const path = selectDir();
+  if(path!==null){
+    formInline.value.dir = path;
+  }
 }
 function save() {
   utools.db.remove("setting")
   utools.db.put({_id:"setting",data:JSON.stringify(formInline.value)})
-
-  emit("setIndex",0)
+  addApps(formInline.value.dir);
+  //emit("setIndex",0)
 }
 
-let formInline = ref({style:"",location:"top"})
+let formInline = ref({style:"",location:"left",dir:"",icon:"icon",utools:true})
 let d = utools.db.get("setting")
-
 if(d!==null)
   formInline.value = JSON.parse(d.data);
 

@@ -66,9 +66,55 @@ window.transferDirs = function (dir){
     });
     return list;
 }
+window.selectDir=function () {
+    const result = utools.showOpenDialog({
+        filters: [],
+        properties: ['openDirectory']
+    })
+    if(result===undefined)return null;
+    return result[0];
+}
+window.addApps=function (path){
+    //删除存储的数据
+    const quickList = utools.db.get("quick_list");
+    console.log(1)
+    if(quickList!==null){
+        const json = JSON.parse(quickList.data);
+        for (const jsonKey in json) {
+            for (const jsonKeyElement of json[jsonKey]) {
+                utools.db.remove(jsonKeyElement.link);
+                utools.removeFeature("quick_link:"+jsonKeyElement.link);
+            }
+        }
+    }
+    utools.db.remove("quick_list")
+    utools.db.remove("quick_sort")
+    const quick_list = transferDirs(path)
+    utools.db.put({
+        //存储的时候自动排序
+        _id:"quick_list",data:JSON.stringify(quick_list)
+    });
+    let global_setting = {style:"",location:"left",dir:"",icon:"icon",utools:true};
+    try{
+        global_setting = JSON.parse(utools.db.get("setting").data);
+        if(global_setting.utools){
+            for (const sortName in quick_list) {
+                for (const listItem of quick_list[sortName]) {
+                    const feature = {
+                        code: "quick_link:"+listItem.link,
+                        explain: sortName,
+                        platform:['darwin' , 'win32' , 'linux'],
+                        icon: utools.db.get(listItem.link).data,
+                        cmds: [listItem.name]
+                    }
+                    utools.setFeature(feature);
+                }}
+        }
+    }catch (e) {
 
+    }
 
-
+}
 
 var utils = {
     isMacLink(path) {
@@ -194,4 +240,54 @@ var utils = {
 
 }
 
+
+window.exports = {
+    "quciksearch": { // 注意：键对应的是 plugin.json 中的 features.code
+        mode: "list",  // 列表模式
+        args: {
+            // 进入插件应用时调用（可选）
+            enter: (action, callbackSetList) => {
+                let list_data = [];
+                for (const sortName of quick_sort) {
+                    for (const listItem of quick_list[sortName]) {
+                        //let icon = utools.db.get(props.link).data;
+                        list_data.push({
+                            title: listItem.title,
+                            description: sortName,
+                            icon:utools.db.get(listItem.link).data,
+                            link:listItem.link
+                        })
+                    }
+                }
+                callbackSetList(list_data);
+            },
+            // 子输入框内容变化时被调用 可选 (未设置则无搜索)
+            search: (action, searchWord, callbackSetList) => {
+                let list_data = [];
+                for (const sortName of quick_sort) {
+                    for (const listItem of quick_list[sortName]) {
+                        //let icon = utools.db.get(props.link).data;
+                        if(listItem.title.toLowerCase().indexOf(searchWord.toLowerCase())!==-1){
+                            list_data.push({
+                                title: listItem.title,
+                                description: sortName,
+                                icon:utools.db.get(listItem.link).data,
+                                link:listItem.link
+                            })
+                        }
+                    }
+                }
+                callbackSetList(list_data)
+            },
+            // 用户选择列表中某个条目时被调用
+            select: (action, itemData, callbackSetList) => {
+                window.utools.hideMainWindow()
+                utools.shellOpenPath(itemData.link)
+                window.utools.outPlugin()
+            },
+            // 子输入框为空时的占位符，默认为字符串"搜索"
+            placeholder: "搜索"
+        }
+    }
+}
 
