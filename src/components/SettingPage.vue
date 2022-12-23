@@ -75,6 +75,10 @@ if(d!==null)
 
 </script>
 
-<style scoped>
-
+<style>
+@media (prefers-color-scheme: dark) {
+  .el-input__wrapper{
+    background: #292929!important;
+  }
+}
 </style>

@@ -42,6 +42,18 @@ if(d!==null)formInline.value = JSON.parse(d.data);
 
 
 <style>
+
+@media (prefers-color-scheme: dark) {
+.el-tabs__item{
+  color: #d7d7d7 !important;
+}
+  .el-tabs__item.is-active {
+    color: var(--el-color-primary)!important;
+  }
+  .el-tabs--card,.el-tabs__item,.el-tabs__nav{
+    border-color: #2d2d2d!important;
+  }
+}
 .el-tabs{
   height: 100%!important;
 }

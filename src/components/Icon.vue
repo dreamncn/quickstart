@@ -88,4 +88,16 @@ function click() {
   border-radius: 8px;
   background-color: #f5f5f5!important;
 }
+@media (prefers-color-scheme: dark) {
+  .icon-main.list > span{
+    color: #d7d7d7!important;
+  }
+  .icon-main.list:nth-child(odd){
+    background: #222;
+  }
+  .icon-main:hover {
+    background-color: #444!important;
+  }
+}
+
 </style>
