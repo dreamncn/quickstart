@@ -3,13 +3,12 @@ const path=require('path');
 const os = require("os");
 const {shell} = require("electron");
 const {exec} = require("child_process");
-const {isWindows} = require("utools-api-types");
 const travel = function (dir, depth, callback) {
     if (depth > 1) return;//大于二级目录不处理
     fs.readdirSync(dir).forEach((file) => {
         if (file.startsWith(".")) return;
         let pathname = path.join(dir, file);
-        const split = (isWindows())?"\\":"/";
+        const split = utools.isWindows()?'\\':"/";
         const category = dir.substring(dir.lastIndexOf(split) + 1);
         const name = utils.replaceSuffix(file);
         const stats = fs.lstatSync(pathname);
@@ -240,55 +239,3 @@ var utils = {
 
 
 }
-
-
-window.exports = {
-    "quciksearch": { // 注意：键对应的是 plugin.json 中的 features.code
-        mode: "list",  // 列表模式
-        args: {
-            // 进入插件应用时调用（可选）
-            enter: (action, callbackSetList) => {
-                let list_data = [];
-                for (const sortName of quick_sort) {
-                    for (const listItem of quick_list[sortName]) {
-                        //let icon = utools.db.get(props.link).data;
-                        list_data.push({
-                            title: listItem.title,
-                            description: sortName,
-                            icon:utools.db.get(listItem.link).data,
-                            link:listItem.link
-                        })
-                    }
-                }
-                callbackSetList(list_data);
-            },
-            // 子输入框内容变化时被调用 可选 (未设置则无搜索)
-            search: (action, searchWord, callbackSetList) => {
-                let list_data = [];
-                for (const sortName of quick_sort) {
-                    for (const listItem of quick_list[sortName]) {
-                        //let icon = utools.db.get(props.link).data;
-                        if(listItem.title.toLowerCase().indexOf(searchWord.toLowerCase())!==-1){
-                            list_data.push({
-                                title: listItem.title,
-                                description: sortName,
-                                icon:utools.db.get(listItem.link).data,
-                                link:listItem.link
-                            })
-                        }
-                    }
-                }
-                callbackSetList(list_data)
-            },
-            // 用户选择列表中某个条目时被调用
-            select: (action, itemData, callbackSetList) => {
-                window.utools.hideMainWindow()
-                utools.shellOpenPath(itemData.link)
-                window.utools.outPlugin()
-            },
-            // 子输入框为空时的占位符，默认为字符串"搜索"
-            placeholder: "搜索"
-        }
-    }
-}
-
