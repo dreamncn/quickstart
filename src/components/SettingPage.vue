@@ -46,6 +46,7 @@
 
 <script setup>
 import {ref} from 'vue'
+import {ElMessage} from "element-plus";
 const emit = defineEmits(["setIndex"]);
 
 function update() {
@@ -55,10 +56,15 @@ function update() {
   }
 }
 function save() {
+  ElMessage('正在保存')
   utools.db.remove("setting")
   utools.db.put({_id:"setting",data:JSON.stringify(formInline.value)})
   addApps(formInline.value.dir);
-  //emit("setIndex",0)
+  ElMessage({
+    message: '数据刷新成功',
+    type: 'success',
+  })
+  emit("setIndex",0)
 }
 
 let formInline = ref({style:"",location:"left",dir:"",icon:"icon",utools:true})
