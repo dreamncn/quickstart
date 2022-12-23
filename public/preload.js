@@ -3,12 +3,14 @@ const path=require('path');
 const os = require("os");
 const {shell} = require("electron");
 const {exec} = require("child_process");
+const {isWindows} = require("utools-api-types");
 const travel = function (dir, depth, callback) {
     if (depth > 1) return;//大于二级目录不处理
     fs.readdirSync(dir).forEach((file) => {
         if (file.startsWith(".")) return;
         let pathname = path.join(dir, file);
-        const category = dir.substring(dir.lastIndexOf("/") + 1);
+        const split = (isWindows())?"\\":"/";
+        const category = dir.substring(dir.lastIndexOf(split) + 1);
         const name = utils.replaceSuffix(file);
         const stats = fs.lstatSync(pathname);
         if (stats.isDirectory() && !pathname.endsWith(".app")) {

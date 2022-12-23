@@ -1,6 +1,5 @@
 <script setup>
 import MainPage from './components/MainPage.vue'
-import EmptyPage from './components/EmptyPage.vue'
 import {ref} from "vue";
 import SearchPage from "./components/SearchPage.vue";
 import SettingPage from "./components/SettingPage.vue";
@@ -56,7 +55,6 @@ utools.setSubInput(({ text }) => {
 
 <template>
   <MainPage v-if="index===0" @setIndex="setIndex"  />
-  <EmptyPage v-else-if="index===1" @setIndex="setIndex" />
   <SearchPage v-else-if="index===2" @setIndex="setIndex" :text="textData"/>
   <SettingPage v-else-if="index===3" @setIndex="setIndex"/>
 </template>
