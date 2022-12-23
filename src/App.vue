@@ -4,7 +4,7 @@ import {ref} from "vue";
 import SearchPage from "./components/SearchPage.vue";
 import SettingPage from "./components/SettingPage.vue";
 import {ElMessage} from "element-plus";
-
+import 'element-plus/es/components/message/style/css'
 let index = ref(0)
 
 function setIndex(i) {
