@@ -35,6 +35,7 @@ utools.setSubInput(({ text }) => {
       ElMessage('正在刷新数据')
       addApps(JSON.parse(d.data).dir);
       setIndex(0);
+      utools.setSubInputValue("");
       ElMessage({
         message: '数据刷新成功',
         type: 'success',
