@@ -4,7 +4,7 @@ import { ref } from 'vue'
 import Icon from "./Icon.vue";
 const emit = defineEmits(["setIndex"]);
 
-let data = {},sort = {};
+let data = {};
 
 try{
   data = JSON.parse(utools.db.get("quick_list").data);
@@ -29,7 +29,7 @@ if(d!==null)formInline.value = JSON.parse(d.data);
 <template style="max-height: 100%">
 
   <el-tabs  v-model="activeName" :type="formInline.style" :tab-position="formInline.location" >
-    <el-tab-pane v-for="name in keys" :label="name" :name="name">
+    <el-tab-pane v-for="name in keys" :label="name" :name="name" style="text-align: left">
       <Icon v-for="d in data[name]" :name="d.name" :link = "d.link" :icon_item="formInline.icon"></Icon>
     </el-tab-pane>
   </el-tabs>
@@ -69,6 +69,7 @@ if(d!==null)formInline.value = JSON.parse(d.data);
   box-sizing: border-box;
   overflow-x: hidden;
   overflow-y: auto!important;
+  padding: 10px;
 }
 .el-tabs__nav-prev,.el-tabs__nav-next{
   display: none!important;

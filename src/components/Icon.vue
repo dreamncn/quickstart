@@ -89,7 +89,7 @@ function click() {
   background-color: #f5f5f5!important;
 }
 @media (prefers-color-scheme: dark) {
-  .icon-main.list > span{
+  .icon-main > span{
     color: #d7d7d7!important;
   }
   .icon-main.list:nth-child(odd){

@@ -15,8 +15,6 @@ let textData = ref("");
 utools.onPluginEnter(({code, type, payload, optional}) => {
   if(code.startsWith("quick_link:")){
     openLink(code.replace("quick_link:",""));
-  }else if(code==="quicksearch"){
-    setIndex(2);
   }else if(code==="quicksetting"){
     setIndex(3);
   }else{
@@ -37,6 +35,7 @@ utools.setSubInput(({ text }) => {
       ElMessage('正在刷新数据')
       addApps(JSON.parse(d.data).dir);
       setIndex(0);
+      utools.setSubInputValue("");
       ElMessage({
         message: '数据刷新成功',
         type: 'success',

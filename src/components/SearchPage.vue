@@ -18,6 +18,8 @@ try{
 function search(newVal) {
   if(newVal===""){
     emit("setIndex",0)
+  }else if(data===[]){
+    emit("setIndex",3)
   }else{
     tableData = [];
     for (const dataKey in data) {
@@ -90,6 +92,9 @@ function cellClick(row, column, cell, event) {
   }
   .el-table--enable-row-hover .el-table__body tr:hover>td.el-table__cell  {
     background-color: #444!important;
+  }
+  .el-table{
+    background: #555;
   }
 }
 </style>
