@@ -15,8 +15,6 @@ let textData = ref("");
 utools.onPluginEnter(({code, type, payload, optional}) => {
   if(code.startsWith("quick_link:")){
     openLink(code.replace("quick_link:",""));
-  }else if(code==="quicksearch"){
-    setIndex(2);
   }else if(code==="quicksetting"){
     setIndex(3);
   }else{

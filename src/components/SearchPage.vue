@@ -18,6 +18,8 @@ try{
 function search(newVal) {
   if(newVal===""){
     emit("setIndex",0)
+  }else if(data===[]){
+    emit("setIndex",3)
   }else{
     tableData = [];
     for (const dataKey in data) {

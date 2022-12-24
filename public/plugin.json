@@ -16,12 +16,6 @@
       "icon": "logo.png"
     },
     {
-      "code": "quicksearch",
-      "explain": "极速搜索",
-      "cmds": ["极速搜索","qs"],
-      "icon": "logo.png"
-    },
-    {
       "code": "quicksetting",
       "explain": "极速设置",
       "cmds": ["极速设置","qss"],
