@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require("os");
 const {shell} = require("electron");
-const {exec} = require("child_process");
+const {execSync,exec} = require("child_process");
 const isNumber = (name) => {
     const index = name.indexOf(".");
     if (index === -1) return false;
@@ -55,6 +55,7 @@ const travel = function (dir, depth, callback) {
 const transferDirs = function (dir) {
     var list = {};
     travel(dir, 0, function (category, name, link) {
+        console.log(category, name, link)
         let data = ['png', 'jpg', 'jpeg', 'bmp', 'ico', 'gif', 'svg'];
         let logo = utils.getBase64Ico(link);
         //如果同路径下存在同名图片则认为是路径
@@ -102,7 +103,7 @@ window.addApps = function (path) {
         }
     }
     utools.db.remove("quick_list")
-    const quick_list = transferDirs(path)
+    const quick_list = transferDirs(path);
     utools.db.put({
         //存储的时候自动排序
         _id: "quick_list", data: JSON.stringify(quick_list)
@@ -152,72 +153,9 @@ var utils = {
         return path.toLowerCase().endsWith(".desktop");
     },
     getMacLink(url) {
-        //没有完全按照结构化去构造mac alia 的数据结构，只是提取了些许特征进行匹配
-        // console.log(path.basename(url))
-        let p = fs.readFileSync(url)
-        let start = 0, end = 0, findDnib = false;
-        let first = false, strEnd = false, str = "/";
-        for (let i = 80; i < p.length; i++) {
-            // console.log(p.subarray(i,i+4).toString(),p.subarray(i,i+4).toString("hex"))
-            if (!strEnd) {
-                if (p.subarray(i, i + 1).toString("hex").startsWith("0")) {
-                    first = true
-                    //continue
-                    // 0开头的表示不可显示的字符
-                } else {
-                    if (p.subarray(i, i + 1).toString() === "$" || p.subarray(i, i + 4).toString("hex") === "20000000") {
-                        strEnd = true
-                        if (str.lastIndexOf("/") + 2 === str.length) {
-                            str = str.substring(0, str.lastIndexOf("/"))
-                        }
-                        //
-                    } else {
-                        // TODO 此处有问题，因为是按照字节转换的，所以遇到中文（双字节）会出现乱码，以后再说吧。
-                        if (first) {
-                            first = false;
-
-                            str += "/" + p.subarray(i, i + 1).toString("utf8")
-                        } else {
-                            str += p.subarray(i, i + 1).toString("utf8")
-                        }
-                    }
-                }
-            }
-
-
-            if (p.subarray(i, i + 4).toString("hex") === "646e6962") {
-                findDnib = true;
-            }
-            if (findDnib && p.subarray(i, i + 4).toString("hex") === "66696c65") {
-                start = i;
-                //找到
-                // console.log("找到起点",start)
-                // console.log(p.subarray(i).toString(),p.subarray(i).toString("hex"))
-                let find = false;
-                for (let j = i; j < p.length; j++) {
-                    //  console.log(p.subarray(j,j+4).toString(),p.subarray(j,j+4).toString("hex"))
-                    if (p.subarray(j, j + 1).toString("hex") === "00") {
-                        end = j;
-                        //  console.log("------> 找到终点",end)
-                        find = true;
-                        break
-                    }
-                }
-                if (find) break
-            }
-
-            //  console.log(i,p.subarray(i,i+1).toString("hex"),p.subarray(i,i+1).toString())
-        }
-        if (end <= start) {
-            if (str === "/") return url;
-            return str;
-            // console.log("无法定位数据",str)
-        } else {
-            const data = p.subarray(start, end).toString("utf8");
-            return decodeURI(data.substring("file://".length, data.lastIndexOf("/")))
-        }
-        //   console.log(p.toString())
-
+        //解决方案源自 https://github.com/dev4dev/get-path/blob/master/Sources/GetPath/GetPath.swift
+        const file = __dirname + "/GetPath"
+        return execSync('chmod +x '+file+' && '+file+' "'+url+'"').toString().trim();
     },
     getLinuxLink(filepath, key = "Name") {
         return new Promise(function (resolve, reject) {
@@ -242,6 +180,7 @@ var utils = {
         return t
     }, getBase64Ico(filepath) {
         let sourceImage, ext = path.extname(filepath).slice(1);
+        console.log(sourceImage, ext)
         if (['png', 'jpg', 'jpeg', 'bmp', 'ico', 'gif', 'svg'].includes(ext)) {
             if (ext === 'svg') ext = 'svg+xml'
             sourceImage = `data:image/${ext};base64,` + fs.readFileSync(filepath, 'base64')
@@ -249,7 +188,5 @@ var utils = {
             sourceImage = utools.getFileIcon(filepath)
         }
         return sourceImage
-    },//打开文件方法
-
-
+    }
 }
