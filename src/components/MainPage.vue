@@ -4,7 +4,7 @@ import { ref } from 'vue'
 import Icon from "./Icon.vue";
 const emit = defineEmits(["setIndex"]);
 
-let data = {},sort = {};
+let data = {};
 
 try{
   data = JSON.parse(utools.db.get("quick_list").data);
@@ -69,6 +69,7 @@ if(d!==null)formInline.value = JSON.parse(d.data);
   box-sizing: border-box;
   overflow-x: hidden;
   overflow-y: auto!important;
+  padding: 10px;
 }
 .el-tabs__nav-prev,.el-tabs__nav-next{
   display: none!important;

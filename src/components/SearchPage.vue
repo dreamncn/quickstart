@@ -93,5 +93,8 @@ function cellClick(row, column, cell, event) {
   .el-table--enable-row-hover .el-table__body tr:hover>td.el-table__cell  {
     background-color: #444!important;
   }
+  .el-table{
+    background: #555;
+  }
 }
 </style>
