@@ -153,7 +153,7 @@ var utils = {
         return path.toLowerCase().endsWith(".desktop");
     },
     getMacLink(url) {
-        //解决方案源自 https://github.com/dev4dev/get-path/blob/master/Sources/GetPath/GetPath.swift
+
         const file =  utools.getPath("temp")+"GetPath";
         try{
             fs.accessSync(file,fs.constants.F_OK)
@@ -200,7 +200,7 @@ var utils = {
  * 释放GetPath插件
  */
 function releasePlugin(file) {
-
+//基于该项目编译的二进制文件 https://github.com/dev4dev/get-path/blob/master/Sources/GetPath/GetPath.swift
    fs.writeFileSync(file,Buffer.from('z/rt/gcAAAEDAAAAAgAAAB8AAABgDgAAhQAgAAAAAAAZAAAASAAAAF9fUEFHRVpFUk8AAAAAAAAA\n' +
        'AAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZAAAASAUAAF9f\n' +
        'VEVYVAAAAAAAAAAAAAAAAAAAAQAAAABAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAUAAAAFAAAAEAAA\n' +
