@@ -61,6 +61,7 @@ function save() {
   utools.db.remove("setting")
   utools.db.put({_id:"setting",data:JSON.stringify(formInline.value)})
   addApps(formInline.value.dir);
+  utools.setSubInputValue("");
   ElMessage({
     message: '数据刷新成功',
     type: 'success',
